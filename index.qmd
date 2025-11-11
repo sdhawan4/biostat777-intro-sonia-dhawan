@@ -1,0 +1,15 @@
+---
+title: "Home Page"
+about:
+  template: trestles
+  image: cherryblossoms.jpg
+  links:
+    - icon: envelope
+      text: Contact Me
+      href: mailto:sdhawan4@jh.edu
+    - icon: github
+      text: Github
+      href: https://github.com/sdhawan4
+---
+
+Sonia Dhawan is a PhD student in the Environmental Health department at the Johns Hopkins School of Public Health. She is an exposure scientist in training, with an interest in psychosocial exposure measurement methods in the workplace. She holds an MPH from the Johns Hopkins School of Public Health.

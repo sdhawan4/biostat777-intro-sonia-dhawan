@@ -1,0 +1,361 @@
+$ pwd
+/c/Users/sonia_y/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ curl https://raw.githubusercontent.com/stephaniehicks/jhustatprogramming2025/refs/heads/main/projects/01-project/students.csv --output students.csv
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   257  100   257    0     0    256      0  0:00:01  0:00:01 --:--:--   257
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ cat students.csv
+ID,Name,Age,Gender,Grade,Subject
+1,Alice,20,F,88,Math
+2,Bob,22,M,76,History
+3,Charlie,23,M,90,Math
+4,Diana,21,F,85,Science
+5,Eve,20,F,92,Math
+6,Frank,22,M,72,History
+7,Grace,23,F,78,Science
+8,Heidi,21,F,88,Math
+9,Ivan,20,M,85,Science
+10,Judy,22,F,79,History
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ head -n 5 students.csv
+ID,Name,Age,Gender,Grade,Subject
+1,Alice,20,F,88,Math
+2,Bob,22,M,76,History
+3,Charlie,23,M,90,Math
+4,Diana,21,F,85,Science
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ tail -n 3 students.csv
+8,Heidi,21,F,88,Math
+9,Ivan,20,M,85,Science
+10,Judy,22,F,79,History
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ wc -l students.csv
+10 students.csv
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ grep -n "Math" students.csv
+2:1,Alice,20,F,88,Math
+4:3,Charlie,23,M,90,Math
+6:5,Eve,20,F,92,Math
+9:8,Heidi,21,F,88,Math
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ grep -n "F" students.csv
+2:1,Alice,20,F,88,Math
+5:4,Diana,21,F,85,Science
+6:5,Eve,20,F,92,Math
+7:6,Frank,22,M,72,History
+8:7,Grace,23,F,78,Science
+9:8,Heidi,21,F,88,Math
+11:10,Judy,22,F,79,History
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ grep -n ",F," students.csv
+2:1,Alice,20,F,88,Math
+5:4,Diana,21,F,85,Science
+6:5,Eve,20,F,92,Math
+8:7,Grace,23,F,78,Science
+9:8,Heidi,21,F,88,Math
+11:10,Judy,22,F,79,History
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ sort -k3 students.csv
+1,Alice,20,F,88,Math
+10,Judy,22,F,79,History
+2,Bob,22,M,76,History
+3,Charlie,23,M,90,Math
+4,Diana,21,F,85,Science
+5,Eve,20,F,92,Math
+6,Frank,22,M,72,History
+7,Grace,23,F,78,Science
+8,Heidi,21,F,88,Math
+9,Ivan,20,M,85,Science
+ID,Name,Age,Gender,Grade,Subject
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ sort -n3 students.csv
+sort: unknown option -- 3
+Try 'sort --help' for more information.
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ sort -n students.csv
+ID,Name,Age,Gender,Grade,Subject
+1,Alice,20,F,88,Math
+2,Bob,22,M,76,History
+3,Charlie,23,M,90,Math
+4,Diana,21,F,85,Science
+5,Eve,20,F,92,Math
+6,Frank,22,M,72,History
+7,Grace,23,F,78,Science
+8,Heidi,21,F,88,Math
+9,Ivan,20,M,85,Science
+10,Judy,22,F,79,History
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ column students.csv -t -s ","
+ID  Name     Age  Gender  Grade  Subject
+1   Alice    20   F       88     Math
+2   Bob      22   M       76     History
+3   Charlie  23   M       90     Math
+4   Diana    21   F       85     Science
+5   Eve      20   F       92     Math
+6   Frank    22   M       72     History
+7   Grace    23   F       78     Science
+8   Heidi    21   F       88     Math
+9   Ivan     20   M       85     Science
+10  Judy     22   F       79     History
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ sort -k3 students.csv
+1,Alice,20,F,88,Math
+10,Judy,22,F,79,History
+2,Bob,22,M,76,History
+3,Charlie,23,M,90,Math
+4,Diana,21,F,85,Science
+5,Eve,20,F,92,Math
+6,Frank,22,M,72,History
+7,Grace,23,F,78,Science
+8,Heidi,21,F,88,Math
+9,Ivan,20,M,85,Science
+ID,Name,Age,Gender,Grade,Subject
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ column students.csv -t -s "," --output students.csv
+column: ambiguous option -- output
+Try 'column --help' for more information.
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ sort -k3 students.csv
+1,Alice,20,F,88,Math
+10,Judy,22,F,79,History
+2,Bob,22,M,76,History
+3,Charlie,23,M,90,Math
+4,Diana,21,F,85,Science
+5,Eve,20,F,92,Math
+6,Frank,22,M,72,History
+7,Grace,23,F,78,Science
+8,Heidi,21,F,88,Math
+9,Ivan,20,M,85,Science
+ID,Name,Age,Gender,Grade,Subject
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ cat students.csv
+ID,Name,Age,Gender,Grade,Subject
+1,Alice,20,F,88,Math
+2,Bob,22,M,76,History
+3,Charlie,23,M,90,Math
+4,Diana,21,F,85,Science
+5,Eve,20,F,92,Math
+6,Frank,22,M,72,History
+7,Grace,23,F,78,Science
+8,Heidi,21,F,88,Math
+9,Ivan,20,M,85,Science
+10,Judy,22,F,79,History
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ nano students.csv
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ column students.csv -t -s ","
+ID  Name     Age  Gender  Grade  Subject
+1   Alice    20   F       88     Math
+2   Bob      22   M       76     History
+3   Charlie  23   M       90     Math
+4   Diana    21   F       85     Science
+5   Eve      20   F       92     Math
+6   Frank    22   M       72     History
+7   Grace    23   F       78     Science
+8   Heidi    21   F       88     Math
+9   Ivan     20   M       85     Science
+10  Judy     22   F       79     History
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ nano students.csv
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ columns students.csv -t -s "," | sort -k3
+bash: columns: command not found
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ column students.csv -t -s "," | sort -k3
+5   Eve      20   F       92     Math
+2   Bob      22   M       76     History
+9   Ivan     20   M       85     Science
+10  Judy     22   F       79     History
+ID  Name     Age  Gender  Grade  Subject
+1   Alice    20   F       88     Math
+4   Diana    21   F       85     Science
+8   Heidi    21   F       88     Math
+6   Frank    22   M       72     History
+7   Grace    23   F       78     Science
+3   Charlie  23   M       90     Math
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ column students.csv -t -s "," | sort -n -k3
+ID  Name     Age  Gender  Grade  Subject
+1   Alice    20   F       88     Math
+5   Eve      20   F       92     Math
+9   Ivan     20   M       85     Science
+4   Diana    21   F       85     Science
+8   Heidi    21   F       88     Math
+10  Judy     22   F       79     History
+2   Bob      22   M       76     History
+6   Frank    22   M       72     History
+3   Charlie  23   M       90     Math
+7   Grace    23   F       78     Science
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ unique --help
+bash: unique: command not found
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ uniq --help
+Usage: uniq [OPTION]... [INPUT [OUTPUT]]
+Filter adjacent matching lines from INPUT (or standard input),
+writing to OUTPUT (or standard output).
+
+With no options, matching lines are merged to the first occurrence.
+
+Mandatory arguments to long options are mandatory for short options too.
+  -c, --count           prefix lines by the number of occurrences
+  -d, --repeated        only print duplicate lines, one for each group
+  -D                    print all duplicate lines
+      --all-repeated[=METHOD]  like -D, but allow separating groups
+                                 with an empty line;
+                                 METHOD={none(default),prepend,separate}
+  -f, --skip-fields=N   avoid comparing the first N fields
+      --group[=METHOD]  show all items, separating groups with an empty line;
+                          METHOD={separate(default),prepend,append,both}
+  -i, --ignore-case     ignore differences in case when comparing
+  -s, --skip-chars=N    avoid comparing the first N characters
+  -u, --unique          only print unique lines
+  -z, --zero-terminated     line delimiter is NUL, not newline
+  -w, --check-chars=N   compare no more than N characters in lines
+      --help     display this help and exit
+      --version  output version information and exit
+
+A field is a run of blanks (usually spaces and/or TABs), then non-blank
+characters.  Fields are skipped before chars.
+
+Note: 'uniq' does not detect repeated lines unless they are adjacent.
+You may want to sort the input first, or use 'sort -u' without 'uniq'.
+
+GNU coreutils online help: <https://www.gnu.org/software/coreutils/>
+Full documentation <https://www.gnu.org/software/coreutils/uniq>
+or available locally via: info '(coreutils) uniq invocation'
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ cut --help
+Usage: cut OPTION... [FILE]...
+Print selected parts of lines from each FILE to standard output.
+
+With no FILE, or when FILE is -, read standard input.
+
+Mandatory arguments to long options are mandatory for short options too.
+  -b, --bytes=LIST        select only these bytes
+  -c, --characters=LIST   select only these characters
+  -d, --delimiter=DELIM   use DELIM instead of TAB for field delimiter
+  -f, --fields=LIST       select only these fields;  also print any line
+                            that contains no delimiter character, unless
+                            the -s option is specified
+  -n                      (ignored)
+      --complement        complement the set of selected bytes, characters
+                            or fields
+  -s, --only-delimited    do not print lines not containing delimiters
+      --output-delimiter=STRING  use STRING as the output delimiter
+                            the default is to use the input delimiter
+  -z, --zero-terminated    line delimiter is NUL, not newline
+      --help     display this help and exit
+      --version  output version information and exit
+
+Use one, and only one of -b, -c or -f.  Each LIST is made up of one
+range, or many ranges separated by commas.  Selected input is written
+in the same order that it is read, and is written exactly once.
+Each range is one of:
+
+  N     N'th byte, character or field, counted from 1
+  N-    from N'th byte, character or field, to end of line
+  N-M   from N'th to M'th (included) byte, character or field
+  -M    from first to M'th (included) byte, character or field
+
+GNU coreutils online help: <https://www.gnu.org/software/coreutils/>
+Full documentation <https://www.gnu.org/software/coreutils/cut>
+or available locally via: info '(coreutils) cut invocation'
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ ^C
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ column students.csv -t -s "," | cut -f3 | uniq -u
+ID  Name     Age  Gender  Grade  Subject
+1   Alice    20   F       88     Math
+2   Bob      22   M       76     History
+3   Charlie  23   M       90     Math
+4   Diana    21   F       85     Science
+5   Eve      20   F       92     Math
+6   Frank    22   M       72     History
+7   Grace    23   F       78     Science
+8   Heidi    21   F       88     Math
+9   Ivan     20   M       85     Science
+10  Judy     22   F       79     History
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ cut -d',' -f3 students.csv | uniq -u
+Age
+20
+22
+23
+21
+20
+22
+23
+21
+20
+22
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ ^C
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ cut -d',' -f6 students.csv
+Subject
+Math
+History
+Math
+Science
+Math
+History
+Science
+Math
+Science
+History
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ cut -d',' -f6 students.csv | uniq
+Subject
+Math
+History
+Math
+Science
+Math
+History
+Science
+Math
+Science
+History
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ ^C
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)
+$ script terminal_output.txt
+bash: script: command not found
+
+sonia_y@DESKTOP-NNEFAPC MINGW64 ~/OneDrive - Johns Hopkins/2025-26/Term 2 2025/Statistical Programming/Project 1 (master)

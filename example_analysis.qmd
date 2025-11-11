@@ -1,0 +1,240 @@
+---
+title: "Example Analysis"
+---
+
+## Background and Question
+
+The [National Health Interview Survey](https://www.cdc.gov/nchs/nhis/) is a cross-sectional survey of a nationally representative sample of US adults, in which participants are interviewed about a wide variety of health-related topics.[@NHIS]
+
+*Question*: Do rideshare drivers in the United States have higher odds of cardiovascular issues compared to other non-supervisory ground transportation workers?
+
+The intended audience for this data analysis is other occupational health researchers. The health impacts of the gig economy is an emerging topic in the field.
+
+This analysis uses data from the 2015 NHIS, because that was the one year the survey had an occupational supplement. The data dictionary for this dataset can be found [here](data_dictionary.pdf).
+
+## Data Analysis
+
+#### Setup
+
+```{r warning=FALSE, error=FALSE, message=FALSE, results='hide'}
+
+if (!require("haven")) 
+{
+  install.packages('haven')
+}
+
+library(haven)
+
+if (!require("ipumsr")) 
+{
+  install.packages('ipumsr')
+}
+
+library(ipumsr)
+
+if (!require("dplyr")) 
+{
+  install.packages('dplyr')
+}
+
+library(dplyr)
+
+if (!require("ggplot2")) 
+{
+  install.packages('ggplot2')
+}
+
+library(ggplot2)
+
+
+if (!require("tidyr")) 
+{
+  install.packages('tidyr')
+}
+
+library(tidyr)
+
+ddi <- read_ipums_ddi("nhis_00002.xml")
+data <- read_ipums_micro(ddi)
+
+```
+
+#### Explore the data
+
+```{r warning=FALSE, error=FALSE, message=FALSE, results='hide'}
+
+# Limit data frame to ground transportation workers.
+
+data <- data %>% filter(OCC==89|OCC==90|OCC==92|OCC==93)
+
+```
+
+![A screenshot of the transportation occupations, taken from [here](https://nhis.ipums.org/nhis/10occ.shtml).](occ_var_transportation.png)
+
+::: {.callout-note appearance="simple"}
+### A note about the target population of this analysis
+
+I am including rail transportation workers in this analysis, who may not be comparable to other ground transportation workers such as taxi drivers and truck drivers. A future analysis should exclude rail transportation drivers to see if the magnitude of the exposure-outcome relationship (if any) changes.
+:::
+
+#### Define the Exposure
+
+Since the occupational categories do not explicitly identify rideshare drivers, we are going to use the "work arrangement" variable (WRKARRNG) to identify them. Rideshare drivers are independent contractors. In this dataset, independent contractors are identified with a "1" under the WRKARRNG variable.
+
+::: {.callout-caution appearance="simple"}
+### Exposure Misclassification!
+
+There may, of course, be independent contractors who are not working as rideshare drivers. One weakness of this analysis is that there may be some exposure misclassification. As a result, the magnitude of the exposure-outcome relationship (if any) may end up representing the impact of being an independent contractor, not of being a rideshare driver.
+:::
+
+```{r warning=FALSE, error=FALSE, message=FALSE, results='hide'}
+
+# Let's turn WRKARRNG into a binary variable where 1 = rideshare driver and 0 = not rideshare driver
+
+data <- data %>% mutate(WRKARRNG=ifelse(WRKARRNG==1,1,0))
+
+```
+
+#### Compare Characteristics between Exposure Groups
+
+```{r, warning=FALSE, error=FALSE}
+
+data_compare <- data %>% 
+  group_by(WRKARRNG) %>% 
+  summarize(mean_age=mean(AGE),sex_m=(sum(SEX==1)/sum(SEX==1|SEX==2))*100,not_citizen=(sum(CITIZEN==1)/sum(CITIZEN==1|CITIZEN==2))*100,smoker=(sum(SMOKESTATUS2==10|SMOKESTATUS2==11|SMOKESTATUS2==12|SMOKESTATUS2==13)/sum(SMOKESTATUS2==10|SMOKESTATUS2==11|SMOKESTATUS2==12|SMOKESTATUS2==13|SMOKESTATUS2==20|SMOKESTATUS2==30|SMOKESTATUS2==40))*100)
+
+print(data_compare)
+
+```
+
+For each group (0 = not rideshare driver, 1 = rideshare driver), this data frame displays the mean age, the percentage of the group who are male, and the percentage of the group who are not citizens.
+
+The mean age is fairly similar in both the exposure and comparison groups, so we don't necessarily need to adjust for that in our model. Same with smoking status.
+
+Let's double check this (for age) by visualizing the full distribution of age across both exposure groups:
+
+```{r,warning=FALSE,error=FALSE}
+
+data$rideshare <- factor(data$WRKARRNG,labels = c("Not Rideshare Driver","Rideshare Driver"))
+
+age_dens <- ggplot(data, aes(AGE)) + geom_density() + labs(title="Distribution of Age", subtitle="Stratified By Exposure Group", x="Age", y="Proportion of participants", caption="Study Population: Ground transportation workers who responded to the 2015 NHIS") + facet_wrap(vars(rideshare))
+
+age_dens
+
+```
+
+::: column-margin
+I am not going to include age in my model here, for parsimony. However, it is important to note here that the non-exposed group is bimodal - there is a peak just before age 30. Age impacts cardiovascular outcomes (ie, older people have higher prevalence of cardiovascular disease and related outcomes), so whatever exposure-outcome relationship this analysis yields may overestimate the actual signal between rideshare driving and cardiovascular outcomes. In other words, the effect we see here may reflect the fact that rideshare drivers in this sample are older than the non-exposed group.
+:::
+
+#### Defining the Covariates
+
+There are established causal pathways between smoking, sleep, and physical activity (respectively) and cardiovascular outcomes [@Ghodeshwar2023], and there is some evidence that these covariates may be associated with rideshare driving [@Margerison2025].
+
+This dataset has multiple measures of sleep and physical activity. Let's visualize the relationship between 2 categorical measures of sleep: number of days feeling rested in the last week and frequency of feeling exhausted in the last 3 months.
+
+```{r warning=FALSE,error=FALSE}
+
+sleep_vars <- ggplot(data,aes(x=TIREFREQ3MO,y=SLEEPREST)) + geom_count() + labs(title="Relationship Between Sleep Variables", subtitle="How do self-reports about tiredness frequency in the prior 3 months match up with \nself-reports about sleep restfulness in the prior week?", x="Frequency of Feeling Exhausted in the Last 3 Months", y="Days Woke Up Feeling Rested, Past Week", caption="1: Never, 2: Some Days, 3: Most Days, 4: Every Day") + theme(plot.caption = element_text(size=11,hjust=0.5), plot.subtitle = element_text(face="italic")) + ylim(0,7) + xlim(1,4) + facet_wrap(vars(rideshare))
+
+sleep_vars
+
+```
+
+This shows that there is little consistency between these two measures. We will use the 3 month measure in our analysis, since it's more likely to contribute to current cardiovascular disease indicators than sleep quality in the last week (since this data is taken from a cross-sectional survey).
+
+Let's define the remaining covariates:
+
+```{r error=FALSE, warning=FALSE, message=FALSE, results='hide'}
+
+# Covariates: Sex, citizenship, tiredness (past 3 mos), physical activity
+
+# Remove participants with missing data for any of the covariates
+
+data <- subset(data, TIREFREQ3MO >=1 & TIREFREQ3MO <=4 & VIG10FWK < 97 & STRONGFWK < 97 & MOD10FWK < 97)
+
+# Recode physical activity variables to be in numeric order
+
+data$MOD10FWK[data$MOD10FWK == 94 | data$MOD10FWK == 95 | data$MOD10FWK == 96] <- 0
+
+data$STRONGFWK[data$STRONGFWK == 94 | data$STRONGFWK == 95 | data$STRONGFWK == 96] <- 0
+
+data$VIG10FWK[data$VIG10FWK == 94 | data$VIG10FWK == 95 | data$VIG10FWK == 96] <- 0
+
+# Add across the activity rows to create one activity variable
+
+data$ACTIVITY <- data$MOD10FWK+data$STRONGFWK+data$VIG10FWK
+
+```
+
+Let's see the distribution of physical activity frequency between exposure groups:
+
+```{r error=FALSE, warning=FALSE}
+
+activity_hist <- ggplot(data,aes(ACTIVITY)) + geom_histogram(bins=10)+facet_wrap(vars(rideshare)) + labs(title="Distribution of Physical Activity Frequency", subtitle="Stratified by Exposure Group", x="Frequency of Physical Activity per Week", y="Count",caption="The Not Rideshare Driver group had a count of ~475 for those who do no physical activity every week; \nthe y-axis has been limited for interpretability.") + ylim(0,300) + xlim(0,50)
+
+activity_hist
+
+```
+```{r error=FALSE, warning=FALSE, results='hide', message=FALSE}
+
+# Rename the tiredness column to make it easier to type
+
+data <- rename(data, TIREDNESS = TIREFREQ3MO)
+
+```
+
+#### Defining the Outcome
+
+In this dataset, cardiovascular outcomes are measured by 4 variables that measure whether the participant has been diagnosed with high cholesterol or hypertension in the prior 12 months, or whether they are currently taking medication for high cholesterol or hypertension.
+
+Let's collapse these variables into one:
+
+```{r error=FALSE, message=FALSE, results='hide', message=FALSE}
+
+# Recode the variables
+
+data$CHOLHIGHYR[data$CHOLHIGHYR == 1] <- 0
+
+data$HYPERTENYR[data$HYPERTENYR == 1] <- 0
+
+data$CHOLMEDNOW[data$CHOLMEDNOW == 1] <- 0
+
+data$HYPMEDNOW[data$HYPMEDNOW == 1] <- 0
+
+data <- subset(data, CHOLHIGHYR !=9 & HYPERTENYR !=9)
+
+# Create a single outcome var
+
+data$CARDIO <- data$CHOLMEDNOW+data$CHOLHIGHYR+data$HYPERTENYR+data$HYPMEDNOW
+
+# Recode it into a binary variable
+
+data$CARDIO[data$CARDIO >= 2] <- 1
+
+```
+
+#### Putting it all together
+
+Now that we have our exposure variable (rideshare), covariates (SEX, CITIZEN, ACTIVITY, TIREDNESS), and our outcome (CARDIO), we can put it all together into a logistic regression:
+
+```{r warning=FALSE, error=FALSE}
+
+model <- glm(CARDIO ~ rideshare + SEX + CITIZEN + ACTIVITY + TIREDNESS, data = data, family = binomial)
+
+summary(model)
+
+```
+## Summary of Analysis
+
+This analysis used data from the 2015 National Health Interview Survey occupational supplement to determine whether rideshare drivers are uniquely at risk for cardiovascular issues, when compared to the broader population of ground transportation workers included in the survey. It has been hypothesized that rideshare drivers may have worse health outcomes in general due to the impacts of algorithmic control and gamification on their health behaviors. The purpose of this analysis was to identify if there is anything inherent to being a rideshare driver that causes this health disparity, beyond the ways that the alogorithm encourages unhealthy behaviors. The results of this logistic regression show that citizenship, physical activity level, and exhaustion all contribute to cardiovascular outcomes in drivers, but being a rideshare driver on its own did not have a relationship with cardiovascular issues. 
+
+There are of course some weaknesses with this analysis, which have been noted throughout. It is imperative that future surveys clearly identify who is and is not a rideshare driver, since this analysis rested on the assumption that all independent contractors who are occupational drivers are rideshare drivers.
+
+## List of Functions
+
+1.  filter (dplyr)
+2.  mutate (dplyr)
+3.  group_by (dplyr)
+4.  summarize (dplyr)
+5.  rename (dplyr)
